@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-api
+  template:
+    metadata:
+      labels:
+        app: todo-api
+    spec:
+      containers:
+        - name: todo-api
+          image: pryi/todo-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGO_URI
+              value: "mongodb://admin:adminpass@mongo:27017/todos?authSource=admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-api
+spec:
+  selector:
+    app: todo-api
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: NodePort
